@@ -39,10 +39,12 @@ function App() {
   const rowHeight = 160;
 
   const filteredData = searchData.filter((item) => {
+    const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
-      item.s.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.d.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.t.toLowerCase().includes(searchTerm.toLowerCase());
+      item.s.toLowerCase().includes(searchTermLower) ||
+      item.d.toLowerCase().includes(searchTermLower) ||
+      item.t.toLowerCase().includes(searchTermLower) ||
+      ('!' + item.t).toLowerCase().includes(searchTermLower);
 
     return matchesSearch && (!selectedCategory || item.c === selectedCategory);
   });
