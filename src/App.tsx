@@ -208,7 +208,12 @@ function App() {
               onChange={handleSearchChange}
             />
           </div>
-
+          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+            use with{' '}
+            <code className="px-1 py-0.5 rounded bg-stone-100 dark:bg-stone-800">
+              https://unduck.link/?q=%s
+            </code>{' '}
+          </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {categories.map((category) => (
               <button
