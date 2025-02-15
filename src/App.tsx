@@ -46,6 +46,10 @@ function App() {
       item.t.toLowerCase().includes(searchTermLower) ||
       ('!' + item.t).toLowerCase().includes(searchTermLower);
 
+    if (selectedCategory === 'Single Character') {
+      return matchesSearch && item.t.length === 1;
+    }
+
     return matchesSearch && (!selectedCategory || item.c === selectedCategory);
   });
 
@@ -70,6 +74,8 @@ function App() {
     const uniqueCategories = new Set(
       searchData.map((item) => item.c).filter(Boolean)
     );
+    // Add special category for single character bangs
+    uniqueCategories.add('Single Character');
     return Array.from(uniqueCategories);
   }, [searchData]);
 
