@@ -46,7 +46,7 @@ function App() {
       item.t.toLowerCase().includes(searchTermLower) ||
       ('!' + item.t).toLowerCase().includes(searchTermLower);
 
-    if (selectedCategory === 'Single Character') {
+    if (selectedCategory === 'Popular') {
       return matchesSearch && item.t.length === 1;
     }
 
@@ -74,8 +74,8 @@ function App() {
     const uniqueCategories = new Set(
       searchData.map((item) => item.c).filter(Boolean)
     );
-    // Add special category for single character bangs
-    uniqueCategories.add('Single Character');
+    // Add special category for Popular bangs
+    uniqueCategories.add('Popular');
     return Array.from(uniqueCategories);
   }, [searchData]);
 
