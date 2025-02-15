@@ -26,6 +26,7 @@ function App() {
   });
 
   const listRef = React.useRef<HTMLDivElement>(null);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const PADDING = 48;
   const availableWidth = Math.min(1920, windowSize.width - PADDING);
@@ -74,8 +75,10 @@ function App() {
     const uniqueCategories = new Set(
       searchData.map((item) => item.c).filter(Boolean)
     );
-    // Add special category for Popular bangs
-    uniqueCategories.add('Popular');
+    // Only add Popular category if we have search data
+    if (searchData.length > 0) {
+      uniqueCategories.add('Popular');
+    }
     return Array.from(uniqueCategories);
   }, [searchData]);
 
@@ -175,7 +178,23 @@ function App() {
           </h1>
 
           <div className="relative max-w-xl mx-auto">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg
+                className="w-5 h-5 text-stone-400 dark:text-stone-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
             <input
+              ref={searchInputRef}
+              autoFocus
               type="text"
               placeholder="Search by name, domain, or shortcut..."
               className="w-full pl-10 pr-4 py-3 rounded-lg 
