@@ -8,6 +8,10 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('q') || '';
   });
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('category') || '';
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -34,12 +38,14 @@ function App() {
     : Math.max(1, Math.floor(availableWidth / columnWidth));
   const rowHeight = 160;
 
-  const filteredData = searchData.filter(
-    (item) =>
+  const filteredData = searchData.filter((item) => {
+    const matchesSearch =
       item.s.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.d.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.t.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      item.t.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesSearch && (!selectedCategory || item.c === selectedCategory);
+  });
 
   const rowCount = Math.ceil(filteredData.length / columnCount);
 
@@ -57,6 +63,13 @@ function App() {
     overscan: 2,
     scrollMargin: listRef.current?.offsetLeft ?? 0,
   });
+
+  const categories = React.useMemo(() => {
+    const uniqueCategories = new Set(
+      searchData.map((item) => item.c).filter(Boolean)
+    );
+    return Array.from(uniqueCategories);
+  }, [searchData]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -99,23 +112,40 @@ function App() {
     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTerm = e.target.value;
-    setSearchTerm(newTerm);
-
-    // Update URL search parameter
+  const updateUrlParams = (newTerm?: string, newCategory?: string) => {
     const params = new URLSearchParams(window.location.search);
-    if (newTerm) {
-      params.set('q', newTerm);
-    } else {
-      params.delete('q');
+
+    if (newTerm !== undefined) {
+      if (newTerm) {
+        params.set('q', newTerm);
+      } else {
+        params.delete('q');
+      }
     }
 
-    // Update URL without reload
+    if (newCategory !== undefined) {
+      if (newCategory) {
+        params.set('category', newCategory);
+      } else {
+        params.delete('category');
+      }
+    }
+
     const newUrl = `${window.location.pathname}${
       params.toString() ? '?' + params.toString() : ''
     }`;
     window.history.replaceState({}, '', newUrl);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTerm = e.target.value;
+    setSearchTerm(newTerm);
+    updateUrlParams(newTerm, selectedCategory);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category === selectedCategory ? '' : category);
+    updateUrlParams(searchTerm, category === selectedCategory ? '' : category);
   };
 
   return (
@@ -150,6 +180,24 @@ function App() {
               value={searchTerm}
               onChange={handleSearchChange}
             />
+          </div>
+
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors
+                  ${
+                    selectedCategory === category
+                      ? 'bg-blue-500 text-white dark:bg-blue-600'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700'
+                  }
+                  border border-stone-200 dark:border-stone-700`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
         <div className="flex flex-col justify-center items-center">
