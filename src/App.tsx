@@ -105,7 +105,7 @@ function App() {
   useEffect(() => {
     fetch('https://tall-lion-44.deno.dev')
       .then((response) => response.json())
-      .then((data) => setSearchData(data.data))
+      .then((data) => setSearchData(data.data.sort((a, b) => b.r - a.r)))
       .finally(() => setIsLoading(false));
   }, []);
 
